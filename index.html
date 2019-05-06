@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="jumbotron">
+            <h1 class="display-3">CHAT APP</h1>
+
+            <input type="text" class="form-control" name="name" placeholder="username" id="user-name"><br>
+            <textarea class="form-control" placeholder="message" id="message-body"></textarea><br>
+            <button id="sendMessage" class="btn btn-success">Send</button>
+        </div>
+        <div id="conversation-area">
+
+        </div>
+    </div>
+
+    <script>
+        $(() => {
+            let socket = io();
+            $("#sendMessage").click(() => {
+                let message = {
+                    name: $("#user-name").val(),
+                    message: $("#message-body").val()
+                };
+                postMessage(message)
+            });
+            getMessages(); 
+        socket.on('message',addMessage);
+
+        })
+
+
+        function addMessage(message) {
+            $("#conversation-area").append(`<h4> ${message.name}</h4>
+               <p> ${message.message}</p>`)
+        }
+        function getMessages() {
+            $.get('http://localhost:3001/messages', (data) => {
+                data.forEach(addMessage);
+            });
+        }
+
+        function postMessage(message) {
+            $.post('http://localhost:3001/messages',message);
+        }
+    </script>
+</body>
+
+</html>
